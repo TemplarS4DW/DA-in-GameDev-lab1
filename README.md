@@ -45,6 +45,19 @@
 
 - На Unity был создан проект, где был создан Empty Object. Далее в assets создан C# Script, который позже был связан с Empty Object. При запуске снизу слева был выведен "Hello World!", весь код C# Script находится справа: 
 ![HelloWorld-Unity](https://user-images.githubusercontent.com/104576932/192353595-6504fd63-4a30-41a2-8235-14e092986a3f.jpg)
+```cs
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class NewBehaviourScript : MonoBehaviour
+{
+    void Start()
+    {
+        Debug.Log("Hello World!");
+    }
+}
+```
 
 
 ## Задание 2

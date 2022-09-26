@@ -109,36 +109,31 @@ def optimize(a, b, x, y):
 ![image](https://user-images.githubusercontent.com/104576932/192359852-bb9d2388-4c02-43a6-8a77-649e27286f4c.png)
 
 ## Задание 3
+### Должна ли величина loss стремиться к нулю при изменении исходных данных? Ответьте на вопрос, приведите пример выполнения кода, который подтверждает ваш ответ.
+- Значение loss будет стремиться к нулю при изменении исходных данных, ведь при увеличении количества итераций loss уменьшается. 
+
+При 1 итерации loss = 4633.537149299337
+![task3](https://user-images.githubusercontent.com/104576932/192366064-f513f22f-3682-40a4-8024-9f324440286f.png)
+
+При 100 итераций loss = 1870.9544863091703
+![task3(1)](https://user-images.githubusercontent.com/104576932/192365809-436e7354-c5b1-497b-90b4-2b44901493cc.png)
+
+При 100000 итераций loss = 190.47390666194988
+![task3(2)](https://user-images.githubusercontent.com/104576932/192365855-28c11959-7c1d-4734-afa2-4efdeec747ff.png)
+
 ### Какова роль параметра Lr? Ответьте на вопрос, приведите пример выполнения кода, который подтверждает ваш ответ. В качестве эксперимента можете изменить значение параметра.
 
-- Перечисленные в этом туториале действия могут быть выполнены запуском на исполнение скрипт-файла, доступного [в репозитории](https://github.com/Den1sovDm1triy/hfss-scripting/blob/main/ScreatingSphereInAEDT.py).
-- Для запуска скрипт-файла откройте Ansys Electronics Desktop. Перейдите во вкладку [Automation] - [Run Script] - [Выберите файл с именем ScreatingSphereInAEDT.py из репозитория].
+- Роль параметра Lr заключается в том, что чем больше параметр Lr, тем больше угол наклона графика больше. 
 
-```py
+При Lr = 0.000001
+![task3(Lr-1)](https://user-images.githubusercontent.com/104576932/192367487-c1fc7b64-90c2-4e2c-953f-64d67c309f9b.png)
 
-import ScriptEnv
-ScriptEnv.Initialize("Ansoft.ElectronicsDesktop")
-oDesktop.RestoreWindow()
-oProject = oDesktop.NewProject()
-oProject.Rename("C:/Users/denisov.dv/Documents/Ansoft/SphereDIffraction.aedt", True)
-oProject.InsertDesign("HFSS", "HFSSDesign1", "HFSS Terminal Network", "")
-oDesign = oProject.SetActiveDesign("HFSSDesign1")
-oEditor = oDesign.SetActiveEditor("3D Modeler")
-oEditor.CreateSphere(
-	[
-		"NAME:SphereParameters",
-		"XCenter:="		, "0mm",
-		"YCenter:="		, "0mm",
-		"ZCenter:="		, "0mm",
-		"Radius:="		, "1.0770329614269mm"
-	], 
-)
-
-```
+При Lr = 0.001
+![task3(Lr-2)](https://user-images.githubusercontent.com/104576932/192367503-c7ffd399-61f5-4068-835b-f8100fbc9a00.png)
 
 ## Выводы
 
-Абзац умных слов о том, что было сделано и что было узнано.
+Я ознакомился с основными операторами языка Python на примере реализации линейной регрессии. В ходе проведённой лабораторной работы были написаны программы с выводом "Hello World!" в Unity и Google.Colab. Познакомившись с алгоритмом линейной регрессии, я определил связанные функции: функции модели, функции потерь, функции оптимизации. Также мною были проведены небольшие опыты с исходными данными и выявлены их зависимости, например у loss, Lr.
 
 | Plugin | README |
 | ------ | ------ |

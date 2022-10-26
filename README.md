@@ -1,5 +1,5 @@
 # АНАЛИЗ ДАННЫХ И ИСКУССТВЕННЫЙ ИНТЕЛЛЕКТ [in GameDev]
-Отчет по лабораторной работе #1 выполнил:
+Отчет по лабораторной работе #3 выполнил:
 - Савватеев Даниил Владимирович
 - РИ-210910
 Отметка о выполнении заданий (заполняется студентом):
@@ -35,108 +35,105 @@
 - ✨Magic ✨
 
 ## Цель работы
-Ознакомиться с основными операторами зыка Python на примере реализации линейной регрессии.
+познакомиться с программными средствами для создания системы машинного обучения и ее интеграции в Unity.
 
 ## Задание 1
-### Вывести "Hello World!" на Unity и Python.
-Для воспроизведения "Hello World!" на языке Python выбран google.colab, где писалась программа. Всё это выглядит так: 
-![python1](https://user-images.githubusercontent.com/104576932/192353227-ba0123df-de86-4150-b724-7ffd3dc107df.jpg)
-![python2](https://user-images.githubusercontent.com/104576932/192353243-090a2612-1c51-49b7-adbe-e347d6e4f1bb.jpg)
+### Реализовать систему машинного обучения в связке Python - Google-Sheets – Unity. При выполнении задания можно использовать видео-материалы и исходные данные, предоставленные преподавателями курса.
 
-На Unity был создан проект, где был создан Empty Object. Далее в assets создан C# Script, который позже был связан с Empty Object. При запуске снизу слева был выведен "Hello World!", весь код C# Script находится справа: 
-![HelloWorld-Unity](https://user-images.githubusercontent.com/104576932/192353595-6504fd63-4a30-41a2-8235-14e092986a3f.jpg)
-```cs
+1) Создан проект 3D Unity, скачана папка с ML агентом, в будущем которая будет импортирована в проект.
+![3 1](https://user-images.githubusercontent.com/104576932/198135263-f34fa4d6-b898-4efc-aab2-f5ce8cae0a98.png)
+
+2) Казалось бы, на этом лабораторная работа завершена, да вот нет. Далее нужно запустить Anaconda Prompt через права администратора и произвести парочку команд для скачивании библиотеки и не только. После установки библиотек, активации и настройки пути наша строчка теперь выглядит так:
+![image](https://user-images.githubusercontent.com/104576932/198135578-6a8385d8-71d3-461f-aed4-6043d6220c0c.png)
+
+3) Размещаем на нашей сцене Plane, Sphere и Cube, а так же создаём C#-скрипт для нашей сферы, добавляя ей компоненты Rigidbody, Decision Requester,
+Behavior Parameters.
+
+C#-скрипт:
+```
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.MLAgents;
+using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Actuators;
 
-public class NewBehaviourScript : MonoBehaviour
+public class RollerAgent : Agent
 {
+    Rigidbody rBody;
     void Start()
     {
-        Debug.Log("Hello World!");
+        rBody = GetComponent<Rigidbody>();
+    }
+
+    public Transform Target;
+    public override void OnEpisodeBegin()
+    {
+        if (this.transform.localPosition.y < 0)
+        {
+            this.rBody.angularVelocity = Vector3.zero;
+            this.rBody.velocity = Vector3.zero;
+            this.transform.localPosition = new Vector3(0, 0.5f, 0);
+        }
+
+        Target.localPosition = new Vector3(Random.value * 8-4, 0.5f, Random.value * 8-4);
+    }
+    public override void CollectObservations(VectorSensor sensor)
+    {
+        sensor.AddObservation(Target.localPosition);
+        sensor.AddObservation(this.transform.localPosition);
+        sensor.AddObservation(rBody.velocity.x);
+        sensor.AddObservation(rBody.velocity.z);
+    }
+    public float forceMultiplier = 10;
+    public override void OnActionReceived(ActionBuffers actionBuffers)
+    {
+        Vector3 controlSignal = Vector3.zero;
+        controlSignal.x = actionBuffers.ContinuousActions[0];
+        controlSignal.z = actionBuffers.ContinuousActions[1];
+        rBody.AddForce(controlSignal * forceMultiplier);
+
+        float distanceToTarget = Vector3.Distance(this.transform.localPosition, Target.localPosition);
+
+        if(distanceToTarget < 1.42f)
+        {
+            SetReward(1.0f);
+            EndEpisode();
+        }
+        else if (this.transform.localPosition.y < 0)
+        {
+            EndEpisode();
+        }
     }
 }
 ```
+Наша абстракция выглядит теперь таким образом:
+![image](https://user-images.githubusercontent.com/104576932/198136396-3bc22cbf-2466-40bb-a5d2-81546a6be81b.png)
+
+
+4) Теперь мы запускаем ML-агента и возвращаемся в юнити, чтобы посмотреть на наш результат. Шарик чуть ли не летает и не улетает с нашей плоскости.
+![image](https://user-images.githubusercontent.com/104576932/198137383-40a45edb-5f1e-456c-89b4-e4f4e6d481cc.png)
+
+5) Теперь же создадим копии нашего изобретения в 3, 9, 27, а то и более штук:
+![image](https://user-images.githubusercontent.com/104576932/198138124-7b8ca912-5c2e-4382-95d1-28c66f1d8395.png)
+![image](https://user-images.githubusercontent.com/104576932/198138424-04677b83-ec41-44ba-8378-d41399650783.png)
+
+6) Теперь же мы добавим полученную RollerBall-модель в Behavior Parameters и посмотрим на наш результат:
+![image](https://user-images.githubusercontent.com/104576932/198138924-de33d58e-8ff5-4f1e-9ac5-508e16999b9b.png)
+** Он двигается плавно и аккуратно **
+
+Вывод по первому заданию: Наша модель обучается куда быстрее, когда стоит как можно больше моделей нашей конструкции для достижения нашей моделькой куба.
 
 
 ## Задание 2
-### В разделе "Ход работы" пошагово выполнить каждый пункт с описанием и примером реализации задачи по теме лабораторной работы
-Ход работы:
-
-1. Произвести подготовку данных для работы с алгоритмом линейной регрессии. 10 видов данных были установлены случайным образом, и данные находились в линейной зависимости. Данные преобразуются в формат массива, чтобы их можно было вычислить напрямую при использовании умножения и сложения.
-
-```py
-import numpy as np
-import matplotlib.pyplot as plt
-%matplotlib inline
-x = [3,21,22,34,54,34,55,67,89,99]
-x = np.array(x)
-y = [2,22,24,65,79,82,55,130,150,199]
-y = np.array(y)
-
-plt.scatter(x,y)
-```
-Для решения данной задачи также использован google.colab
-![image](https://user-images.githubusercontent.com/104576932/192355041-14d1afe6-a3ed-4216-b14c-8ca2a2cd7a19.png)
-
-2. Теперь определим следующие связанные функции: 1) Функция модели: определяет модель линейной регрессии wx+b. 2) Функция потерь: функция потерь среднеквадратичной ошибки. 3) Функция оптимизации: метод градиентного спуска для нахождения частных производных w и b.
-
-Функция модели: определяет модель линейной регрессии wx+b.
-```py
-def model(a, b, x):
-    return a*x + b
-```
-Функция потерь: функция потерь среднеквадратичной ошибки.
-```py
-def loss_function(a, b, x, y):
-    num = len(x)
-    prediction = model(a,b,x)
-    return (0.5/num) * (np.square(prediction - y)).sum()
-```
-Функция оптимизации: метод градиентного спуска для нахождения частных производных w и b.
-```py
-def optimize(a, b, x, y):
-    num = len(x)
-    prediction = model(a, b, x)
-    da = (1.0/num) * ((prediction - y) * x).sum()
-    db = (1.0/num) * ((prediction - y).sum())
-    a = a - Lr * da
-    b = b - Lr * db
-    return a, b
-```
-![image](https://user-images.githubusercontent.com/104576932/192357522-e8cd0782-cecb-48c1-9166-570682cc24e9.png)
-
-3. Итерация
-
-![image](https://user-images.githubusercontent.com/104576932/192359852-bb9d2388-4c02-43a6-8a77-649e27286f4c.png)
+### 
 
 ## Задание 3
-### Должна ли величина loss стремиться к нулю при изменении исходных данных? Ответьте на вопрос, приведите пример выполнения кода, который подтверждает ваш ответ.
-- Значение loss будет стремиться к нулю при изменении исходных данных, ведь при увеличении количества итераций loss уменьшается. 
-
-При 1 итерации loss = 4633.537149299337
-![task3](https://user-images.githubusercontent.com/104576932/192366064-f513f22f-3682-40a4-8024-9f324440286f.png)
-
-При 100 итераций loss = 1870.9544863091703
-![task3(1)](https://user-images.githubusercontent.com/104576932/192365809-436e7354-c5b1-497b-90b4-2b44901493cc.png)
-
-При 100000 итераций loss = 190.47390666194988
-![task3(2)](https://user-images.githubusercontent.com/104576932/192365855-28c11959-7c1d-4734-afa2-4efdeec747ff.png)
-
-### Какова роль параметра Lr? Ответьте на вопрос, приведите пример выполнения кода, который подтверждает ваш ответ. В качестве эксперимента можете изменить значение параметра.
-
-- Роль параметра Lr заключается в том, что чем больше параметр Lr, тем больше угол наклона графика больше. 
-
-При Lr = 0.000001
-![task3(Lr-1)](https://user-images.githubusercontent.com/104576932/192367487-c1fc7b64-90c2-4e2c-953f-64d67c309f9b.png)
-
-При Lr = 0.001
-![task3(Lr-2)](https://user-images.githubusercontent.com/104576932/192367503-c7ffd399-61f5-4068-835b-f8100fbc9a00.png)
+### 
 
 ## Выводы
 
-Я ознакомился с основными операторами языка Python на примере реализации линейной регрессии. В ходе проведённой лабораторной работы были написаны программы с выводом "Hello World!" в Unity и Google.Colab. Познакомившись с алгоритмом линейной регрессии, я определил связанные функции: функции модели, функции потерь, функции оптимизации. Также мною были проведены небольшие опыты с исходными данными и выявлены их зависимости, например у loss, Lr.
+Пока без них.
 
 | Plugin | README |
 | ------ | ------ |

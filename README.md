@@ -50,23 +50,24 @@
 
 А теперь наша задача заключается в смене параметров yaml-агента и определение параметров, а так же как они влияют на обучение, чтобы вот всё было хорошо.
 
-1) Поменяем epsilon с 0.2 на 0.6
-![image](https://user-images.githubusercontent.com/104576932/205350185-91753926-2662-4390-b7c5-6bbd88de17b3.png)
+1) Поменяем epsilon с 0.2 на 0.1
+![image](https://user-images.githubusercontent.com/104576932/205353561-97f504ea-255b-4c36-9662-3348b29fa32b.png)
 
 Epsilon нужен для расчёта скорости развития политики в процессе обучения.
 
-2) Попробуем ещё поменять batch_size с 1024 на 2048
-![image](https://user-images.githubusercontent.com/104576932/205350054-09c1a8d7-0804-4a20-bc0c-b1c132ff622a.png)
+2) Попробуем ещё поменять batch_size с 1024 на 512
+![image](https://user-images.githubusercontent.com/104576932/205354096-f1838620-7e00-4917-9479-d030878a8b2d.png)
 
 Batch_size отвечает за количество опытов в каждой итерации градиентного спуска.
 
-3) Теперь поменяем значение lambd с 0.95 до 0.3
-![image](https://user-images.githubusercontent.com/104576932/205349681-6758a992-4b12-4ecb-b3ce-8327177cb50f.png)
+3) Теперь поменяем значение lambd с 0.95 до 0.9 
+![image](https://user-images.githubusercontent.com/104576932/205354616-39790290-9351-4054-8935-a5e63e8b6010.png)
 
 lambd используется для расчётов общей оценки преимущества GAE.
 
 4) num_epoch увеличим с 3 до 5
-![image](https://user-images.githubusercontent.com/104576932/205349095-c26a10b5-ac9f-451e-bbb4-71e40451a233.png)
+![image](https://user-images.githubusercontent.com/104576932/205355157-a9e4ae76-df67-4d3c-aa75-3b4457a9607c.png)
+
 
 num_epoch показывает количество проходов через буфер опыта при оптимизации градиентного спуска.
 
